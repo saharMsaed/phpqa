@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends $TOOL_DEPS $BUI
  && echo "memory_limit=-1" >> $PHP_INI_DIR/php.ini \
  && echo "phar.readonly=0" >> $PHP_INI_DIR/php.ini \
  && echo "pcov.enabled=0" >> $PHP_INI_DIR/php.ini \
- && apt-get purge -y --auto-remove $BUILD_DEPS
+ && apt-get purge -y --auto-remove $BUILD_DEPS \
+ && npm install --global yarn 
 
 FROM phpbase as toolbox
 
