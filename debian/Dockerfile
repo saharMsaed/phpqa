@@ -6,15 +6,17 @@ ARG TOOLBOX_VERSION="1.47.0"
 FROM ${BASE_IMAGE} as phpbase
 
 LABEL maintainer="Jakub Zalas <jakub@zalas.pl>"
-ARG BUILD_DEPS="autoconf file g++ gcc libc-dev pkg-config re2c"
-ARG LIB_DEPS="zlib1g-dev libzip-dev libbz2-dev libicu-dev"
-ARG TOOL_DEPS="git graphviz make unzip gpg"
+ARG BUILD_DEPS="autoconf file g++ gcc libc-dev pkg-config re2c pkg-config"
+ARG LIB_DEPS="zlib1g-dev libzip-dev libbz2-dev libicu-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev"
+ARG TOOL_DEPS="git graphviz make unzip gpg nodejs npm"
 
 RUN apt-get update && apt-get install -y --no-install-recommends $TOOL_DEPS $BUILD_DEPS $LIB_DEPS && rm -rf /var/lib/apt/lists/* \
  && git clone https://github.com/nikic/php-ast.git && cd php-ast && phpize && ./configure && make && make install && cd .. && rm -rf php-ast && docker-php-ext-enable ast \
  && pecl install pcov && docker-php-ext-enable pcov \
  && docker-php-ext-configure intl \
  && docker-php-ext-install zip pcntl bz2 intl \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) gd
  && echo "date.timezone=Europe/London" >> $PHP_INI_DIR/php.ini \
  && echo "memory_limit=-1" >> $PHP_INI_DIR/php.ini \
  && echo "phar.readonly=0" >> $PHP_INI_DIR/php.ini \
