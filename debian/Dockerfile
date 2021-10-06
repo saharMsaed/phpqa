@@ -23,10 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $TOOL_DEPS $BUI
  && echo "pcov.enabled=0" >> $PHP_INI_DIR/php.ini \
  && apt-get purge -y --auto-remove $BUILD_DEPS \
  && npm install --global yarn 
- 
-RUN composer global bin phpstan require phpstan/phpstan-phpunit \
- && composer global bin phpstan require phpstan/phpstan-doctrine \
- && composer global bin phpstan require phpstan/phpstan-symfony
+
 
 FROM phpbase as toolbox
 
@@ -54,6 +51,10 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN php $TOOLBOX_TARGET_DIR/toolbox install \
  && rm -rf $COMPOSER_HOME/cache
+ 
+RUN composer global bin phpstan require phpstan/phpstan-phpunit \
+ && composer global bin phpstan require phpstan/phpstan-doctrine \
+ && composer global bin phpstan require phpstan/phpstan-symfony
 
 WORKDIR $TOOLBOX_TARGET_DIR
 ENTRYPOINT ["/entrypoint.sh"]
